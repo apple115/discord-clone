@@ -1,7 +1,6 @@
-package main
+package routers
 
 import (
-	"discord-clone/routers"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -10,7 +9,7 @@ import (
 )
 
 func TestPingRoute(t *testing.T) {
-	r := routers.InitRouter()
+	r := InitRouter()
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/ping", nil)
 	r.ServeHTTP(w, req)
