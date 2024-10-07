@@ -36,6 +36,8 @@ func Setup() {
 	}
 	mapTo("database", DatabaseSetting)
 	mapTo("server", ServerSetting)
+	ServerSetting.ReadTimeout = ServerSetting.ReadTimeout * time.Second
+	ServerSetting.WriteTimeout = ServerSetting.WriteTimeout * time.Second
 }
 
 func mapTo(section string, v interface{}) {
