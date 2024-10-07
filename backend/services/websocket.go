@@ -68,14 +68,13 @@ func (client *Client) writePump() {
 		client.Conn.Close()
 	}()
 	for {
-		select {
-		case message, ok := <-client.Send:
-			if !ok {
-				client.Conn.WriteMessage(websocket.CloseMessage, []byte{})
-				return
-			}
-			client.Conn.WriteMessage(websocket.TextMessage, message)
+		message, ok := <-client.Send
+		if !ok {
+			client.Conn.WriteMessage(websocket.CloseMessage, []byte{})
+			return
 		}
+
+		client.Conn.WriteMessage(websocket.TextMessage, message)
 	}
 }
 
