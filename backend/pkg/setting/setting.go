@@ -49,8 +49,8 @@ func Setup() {
 		log.Fatalf("setting.Setup,fail to parse 'conf/app.ini':%v", err)
 	}
 	mapTo("database", DatabaseSetting)
-	mapTo("server", ServerSetting)
 	mapTo("mongodb", MongoDBSetting)
+	mapTo("server", ServerSetting)
 	ServerSetting.ReadTimeout = ServerSetting.ReadTimeout * time.Second
 	ServerSetting.WriteTimeout = ServerSetting.WriteTimeout * time.Second
 }
