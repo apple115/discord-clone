@@ -205,17 +205,21 @@ func main() {
 ### 三、代码解析
 
 1. **WebSocket 连接**：
+
    - 通过 `Gin` 接收到 `/ws` 路由的请求后，使用 `gorilla/websocket` 将 HTTP 连接升级为 WebSocket 连接。
    - `handleWebSocket` 函数会初始化一个新的客户端，并开启读取和写入的协程。
 
 2. **事件处理**：
+
    - `readPump` 函数负责从 WebSocket 连接中读取客户端发来的消息，并根据消息类型调用不同的处理函数。
    - 消息类型包括：`connect`（连接验证）、`join_channel`（加入频道）、`send_message`（发送消息）、`heartbeat`（心跳检测）。
 
 3. **消息广播**：
+
    - 当客户端发送消息时，服务器会通过 `handleSendMessage` 函数将消息广播给当前频道的所有在线用户。
 
 4. **心跳检测**：
+
    - `handleHeartbeat` 函数会处理心跳事件，向客户端发送 `heartbeat_ack` 确认心跳包已收到。
 
 5. **错误处理**：
@@ -224,6 +228,7 @@ func main() {
 ### 四、运行与测试
 
 1. 启动服务：
+
    ```bash
    go run main.go
    ```

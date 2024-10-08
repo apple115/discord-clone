@@ -10,9 +10,9 @@ POST /api/channels：创建新频道。
 GET /api/channels：获取所有频道。
 GET /api/channels/:id：获取单个频道详情。
 ## 消息管理：
-
 POST /api/channels/:id/messages：发送消息到指定频道。
 GET /api/channels/:id/messages：获取频道内的所有消息。
+
 ## 好友系统：
 
 POST /api/friends：发送好友请求。
