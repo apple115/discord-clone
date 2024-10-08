@@ -26,6 +26,11 @@ type Client struct {
 
 var clients = make(map[string][]*Client) //全局的连接池，存储每个频道的用户
 
+type Message struct {
+	Type string `json:"type"`
+	Data map[string]interface{} `json:"data"`
+}
+
 // 读取消息并处理事件
 func (client *Client) readPump() {
 	defer func() {
@@ -73,7 +78,6 @@ func (client *Client) writePump() {
 			client.Conn.WriteMessage(websocket.CloseMessage, []byte{})
 			return
 		}
-
 		client.Conn.WriteMessage(websocket.TextMessage, message)
 	}
 }
@@ -100,7 +104,7 @@ func (client *Client) handleConnect(data map[string]interface{}) {
 	}
 }
 
-// 处理加入频道事件
+// 处理加入频道事件 TODO
 func (client *Client) handleJoinChannel(data map[string]interface{}) {
 	channelID := data["channel_id"].(string)
 	client.ChannelID = channelID
@@ -118,7 +122,7 @@ func (client *Client) handleJoinChannel(data map[string]interface{}) {
 	client.sendJSON(response)
 }
 
-// 处理发送消息事件
+// 处理发送消息事件 TODO
 func (client *Client) handleSendMessage(data map[string]interface{}) {
 	message := map[string]interface{}{
 		"type": "new_message",

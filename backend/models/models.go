@@ -9,6 +9,7 @@ import (
 )
 
 var db *gorm.DB
+var mongodb *mon
 
 func Setup() {
 	var err error
@@ -38,4 +39,8 @@ func Setup() {
 	if err != nil {
 		log.Fatalf("AutoMigrate err: %v", err)
 	}
+}
+
+func MongodbSetup() {
+
 }

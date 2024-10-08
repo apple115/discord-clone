@@ -26,6 +26,13 @@ type Database struct {
 
 var DatabaseSetting = &Database{}
 
+type MongoDB struct {
+	URI      string
+	Database string
+}
+
+var MongoDBSetting = &MongoDB{}
+
 var cfg *ini.File
 
 func Setup() {
@@ -36,6 +43,7 @@ func Setup() {
 	}
 	mapTo("database", DatabaseSetting)
 	mapTo("server", ServerSetting)
+	mapTo("mongodb", MongoDBSetting)
 	ServerSetting.ReadTimeout = ServerSetting.ReadTimeout * time.Second
 	ServerSetting.WriteTimeout = ServerSetting.WriteTimeout * time.Second
 }
