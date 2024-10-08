@@ -7,6 +7,7 @@ POST /api/login：用户登录，返回JWT。
 GET /api/users/:id：获取用户信息。
 ## 频道管理：
 POST /api/channels：创建新频道。
+DEELETE /api/channels/:id: 删除这个频道。
 GET /api/channels：获取所有频道。
 GET /api/channels/:id：获取单个频道详情。
 ## 消息管理：
