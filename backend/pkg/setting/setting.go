@@ -26,6 +26,16 @@ type Database struct {
 
 var DatabaseSetting = &Database{}
 
+type Redis struct {
+	Host        string
+	Password    string
+	MaxIdle     int
+	MaxActive   int
+	IdleTimeout time.Duration
+}
+
+var RedisSetting = &Redis{}
+
 type MongoDB struct {
 	URI      string
 	Database string
@@ -44,6 +54,7 @@ func Setup() {
 	mapTo("database", DatabaseSetting)
 	mapTo("mongodb", MongoDBSetting)
 	mapTo("server", ServerSetting)
+	mapTo("redis", RedisSetting)
 	ServerSetting.ReadTimeout = ServerSetting.ReadTimeout * time.Second
 	ServerSetting.WriteTimeout = ServerSetting.WriteTimeout * time.Second
 }
