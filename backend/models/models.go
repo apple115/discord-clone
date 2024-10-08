@@ -1,14 +1,19 @@
 package models
 
 import (
+	"context"
 	"discord-clone/pkg/setting"
 	"fmt"
 	"log"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 var db *gorm.DB
+var mongoClient *mongo.Client
+var mongoDB *mongo.Database
 
 func Setup() {
 	var err error
@@ -38,8 +43,16 @@ func Setup() {
 	if err != nil {
 		log.Fatalf("AutoMigrate err: %v", err)
 	}
-}
 
-func MongodbSetup() {
-
+	// MongoDB 初始化
+	clientOptions := options.Client().ApplyURI(setting.MongoDBSetting.URI)
+	mongoClient, err = mongo.Connect(context.TODO(), clientOptions)
+	if err != nil {
+		log.Fatalf("无法连接 MongoDB: %v", err)
+	}
+	err = mongoClient.Ping(context.TODO(), nil)
+	if err != nil {
+		log.Fatalf("无法 ping MongoDB: %v", err)
+	}
+	mongoDB = mongoClient.Database(setting.MongoDBSetting.Database)
 }
