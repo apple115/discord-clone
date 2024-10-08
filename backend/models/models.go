@@ -5,18 +5,20 @@ import (
 	"discord-clone/pkg/setting"
 	"fmt"
 	"log"
-	"gorm.io/driver/mysql"
-	"gorm.io/gorm"
+
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 )
 
 var db *gorm.DB
-var mongoClient *mongo.Client
-var mongoDB *mongo.Database
+var MongoClient *mongo.Client
+var MongoDB *mongo.Database
 
 func Setup() {
 	var err error
+	// Gorm 初始化
 	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 		setting.DatabaseSetting.User,
 		setting.DatabaseSetting.Password,
@@ -46,13 +48,13 @@ func Setup() {
 
 	// MongoDB 初始化
 	clientOptions := options.Client().ApplyURI(setting.MongoDBSetting.URI)
-	mongoClient, err = mongo.Connect(context.TODO(), clientOptions)
+	MongoClient, err = mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
 		log.Fatalf("无法连接 MongoDB: %v", err)
 	}
-	err = mongoClient.Ping(context.TODO(), nil)
+	err = MongoClient.Ping(context.TODO(), nil)
 	if err != nil {
 		log.Fatalf("无法 ping MongoDB: %v", err)
 	}
-	mongoDB = mongoClient.Database(setting.MongoDBSetting.Database)
+	MongoDB = MongoClient.Database(setting.MongoDBSetting.Database)
 }

@@ -33,13 +33,6 @@ type MongoDB struct {
 
 var MongoDBSetting = &MongoDB{}
 
-type MongoDB struct {
-	URI      string
-	Database string
-}
-
-var MongoDBSetting = &MongoDB{}
-
 var cfg *ini.File
 
 func Setup() {
