@@ -9,7 +9,6 @@ import (
 )
 
 var db *gorm.DB
-var mongodb *mon
 
 func Setup() {
 	var err error
