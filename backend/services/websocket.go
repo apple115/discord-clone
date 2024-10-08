@@ -1,6 +1,7 @@
 package services
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -9,6 +10,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"discord-clone/models"
 )
 
 var upgrader = websocket.Upgrader{
@@ -139,6 +143,13 @@ func (client *Client) handleSendMessage(data map[string]interface{}) {
 	// 广播消息给同一频道的所有客户端
 	for _, c := range clients[client.ChannelID] {
 		c.Send <- messageBytes
+	}
+
+	// 存储消息到 MongoDB
+	collection := models.mongoDB.Collection("messages")
+	_, err := collection.InsertOne(context.TODO(), message)
+	if err != nil {
+		log.Println("存储消息到 MongoDB 失败:", err)
 	}
 }
 
