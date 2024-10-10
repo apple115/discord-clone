@@ -11,6 +11,7 @@ var MsgFlags = map[int]string{
 	ERROR_EDIT_CHANNEL_FAIL:        "频道编辑失败",
 	ERROR_GET_CHANNEL_FAIL:         "获取频道失败",
 	ERROR_GET_CHANNEL_BY_ID_FAIL:   "通过ID获取频道失败",
+
 	ERROR_GET_CHANNEL_MESSAGE_FAIL: "获取频道历史消息失败",
 }
 

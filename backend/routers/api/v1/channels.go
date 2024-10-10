@@ -5,6 +5,7 @@ import (
 	"discord-clone/pkg/app"
 	"discord-clone/pkg/e"
 	"net/http"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -27,16 +28,23 @@ func CreateChannel(c *gin.Context) {
 		appG.Response(httpCode, errCode, nil)
 		return
 	}
-	//TODO如果频道名存在
-
+	//如果频道名存在
+	exist, err := models.ExitChannelByName(form.Name)
+	if err != nil {
+		appG.Response(http.StatusInternalServerError, e.ERROR_EXIST_CHANNEL_NAME_FAIL, nil)
+		return
+	}
+	if exist {
+		appG.Response(http.StatusOK, e.ERROR_EXIST_CHANNEL_NAME, nil)
+		return
+	}
 
 	data := map[string]interface{}{
 		"name":        form.Name,
 		"description": form.Description,
 		"userID":      form.UserID,
 	}
-	// TODO 插入频道到 MongoDB
-	err := models.AddChannel(data)
+	err = models.AddChannel(data)
 	if err != nil {
 		appG.Response(http.StatusInternalServerError, e.ERROR_ADD_CHANNEL_FAIL, nil)
 		return
@@ -108,8 +116,10 @@ func GetChannelByID(c *gin.Context) {
 // 更新频道信息
 func UpdateChannel(c *gin.Context) {
 	var (
-		form CreateChannelForm
-		appG = app.Gin{C: c}
+		form  CreateChannelForm
+		appG  = app.Gin{C: c}
+		err   Error
+		exist bool
 	)
 	channelID := c.Param("channelID")
 	httpCode, errCode := app.BindAndValidate(c, &form)
@@ -118,7 +128,7 @@ func UpdateChannel(c *gin.Context) {
 		return
 	}
 	//是否存在这个频道
-	exist, err := models.ExitChannel(channelID)
+	exist, err = models.ExitChannel(channelID)
 	if err != nil {
 		appG.Response(http.StatusInternalServerError, e.ERROR_CHECK_EXIST_CHANNEL_FAIL, nil)
 		return
@@ -128,7 +138,16 @@ func UpdateChannel(c *gin.Context) {
 		return
 	}
 
-	//TODO 是否存在这个名字
+	//如果更新的频道名存在，返回错误
+	exist, err = models.ExitChannelByName(form.Name)
+	if err != nil {
+		appG.Response(http.StatusInternalServerError, e.ERROR_EXIST_CHANNEL_NAME_FAIL, nil)
+		return
+	}
+	if exist {
+		appG.Response(http.StatusOK, e.ERROR_EXIST_CHANNEL_NAME, nil)
+		return
+	}
 
 	data := map[string]interface{}{
 		"name":        form.Name,
@@ -150,6 +169,17 @@ func UpdateChannel(c *gin.Context) {
 func DeleteChannelByID(c *gin.Context) {
 	channelID := c.Param("channelID")
 	appG := app.Gin{C: c}
+
+	//是否存在这个频道
+	exist, err = models.ExitChannel(channelID)
+	if err != nil {
+		appG.Response(http.StatusInternalServerError, e.ERROR_CHECK_EXIST_CHANNEL_FAIL, nil)
+		return
+	}
+	if !exist {
+		appG.Response(http.StatusOK, e.ERROR_NOT_EXIST_CHANNEL, nil)
+		return
+	}
 
 	// 删除频道
 	err := models.DeleteChannel(channelID)

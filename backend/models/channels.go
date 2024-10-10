@@ -79,6 +79,18 @@ func ExitChannel(channelID string) (bool, error) {
 	return result.ModifiedCount > 0, nil
 }
 
+func ExitChannelByName(name string) (bool, error) {
+	collection := MongoDB.Collection("channelList")
+	filter := bson.M{"name": name}
+	update := bson.M{"$set": bson.M{"updated_at": time.Now()}}
+
+	result, err := collection.UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		return false, err
+	}
+	return result.ModifiedCount > 0, nil
+}
+
 func EditChannel(channelID string, data map[string]interface{}) error {
 	channelObjID, err := primitive.ObjectIDFromHex(channelID)
 	if err != nil {
