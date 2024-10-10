@@ -34,7 +34,7 @@ func Setup() {
 		&User{},
 		&Guild{},
 		&UserGuild{},
-		&Channel{},
+		&ChannelData{},
 		&UserChannel{},
 		&UserActivityLog{},
 		&Role{},
