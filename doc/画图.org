@@ -1,0 +1,167 @@
+
+** 登录
+*** accesstoken：
+**** 使用格式
+#+begin_src json-ts
+// header
+{
+  "typ": "JWT",
+  "alg": "HS256"
+}
+// Payload
+{
+  "sub": "1234567890",  // 用户ID
+  "name": "John Doe",
+  "iat": 1516239022,   // 签发时间
+  "exp": 1516242622,   // 过期时间
+  "jti": "unique-token-id",  // 令牌唯一标识符
+  "scopes": ["read", "write"]  // 权限范围
+}
+// Signature
+#+end_src
+**** 存储
+客户端：存储在 localStorage 或 sessionStorage 中（对于浏览器应用），或存储在安全的地方（对于移动应用）
+**** 验证
+服务器：在每次请求时，验证 JWT 的签名和有效期。
+
+签名验证：使用相同的密钥验证签名。
+
+有效期验证：检查 exp 字段，确保令牌未过期。
+**** 撤销
+服务器：在用户注销或检测到可疑活动时，将访问令牌的 jti 存储在 Redis 中，并设置一个较短的过期时间（例如，访问令牌的有效期）。
+验证：在每次请求时，检查 Redis 中是否存在该访问令牌的 jti，如果存在则拒绝请求。
+
+*** refreshtoken
+**** 格式
+普通字符串（UUID 或其他唯一标识符）
+唯一标识符：例如 UUID。
+有效期：存储在 Redis 中时，设置一个较长的过期时间（例如几天到几周）。
+
+**** 存储
+客户端：存储在 localStorage 或 sessionStorage 中（对于浏览器应用），或存储在安全的地方（对于移动应用）。
+服务器：存储在 Redis 中，关联用户的唯一标识符（例如用户 ID）。
+
+Redis 存储示例：
+#+begin_src json
+{
+  "userId": "1234567890",
+  "refreshToken": "unique-refresh-token-id",
+  "exp": 1672531200  // 过期时间
+}
+#+end_src
+
+**** 验证
+服务器：在每次使用刷新令牌请求新的访问令牌时，从 Redis 中获取与用户关联的刷新令牌，并验证其有效性。
+
+有效性验证：检查 Redis 中是否存在该刷新令牌，并检查其是否过期。
+
+**** 撤销
+服务器：在用户注销或检测到可疑活动时，从 Redis 中删除与用户关联的刷新令牌。
+
+验证：在每次使用刷新令牌时，检查 Redis 中是否存在该刷新令牌，如果存在则拒绝请求。
+
+*** 登录图
+#+begin_src plantuml :file ../img/登录图.png :width 400
+@startuml
+actor User
+participant "Client" as Client
+participant "Server" as Server
+database "Redis" as Redis
+
+User -> Client: 提供凭证
+Client -> Server: 发送登录请求
+Server -> Server: 验证凭据
+alt 凭据正确
+    Server -> Server: 生成访问令牌和刷新令牌
+    Server -> Redis: 存储刷新令牌
+    Server -> Client: 返回访问令牌和刷新令牌
+else 凭据错误
+    Server -> Client: 返回错误
+end
+
+Client -> Server: 发送请求(包含访问令牌)
+Server -> Server: 验证访问令牌
+alt 访问令牌有效
+    Server -> Client: 返回响应
+else 访问令牌无效
+    Client -> Server: 发送刷新令牌请求
+    Server -> Redis: 获取刷新令牌
+    Server -> Server: 验证刷新令牌
+    alt 刷新令牌有效
+        Server -> Server: 生成新的访问令牌
+        Server -> Redis: 更新刷新令牌
+        Server -> Client: 返回新的访问令牌
+    else 刷新令牌无效
+        Server -> Client: 返回错误
+    end
+end
+
+Client -> Server: 发送请求（包含新的访问令牌）
+Server -> Server: 验证新的访问令牌
+alt 新的访问令牌有效
+    Server -> Client: 返回响应
+else 新的访问令牌无效
+    Client -> Client: 提示用户重新登录
+end
+
+@enduml
+#+end_src
+
+#+RESULTS:
+[[file:../img/登录图.png]]
+
+**
+
+**  用户聊天
+*** 流程图
+#+begin_src plantuml :file ../img/聊天.png :width 400
+@startuml
+actor User
+participant "Client" as Client
+participant "Server" as Server
+participant "RabbitMQ" as MQ
+
+database "Mongodb" as Mongodb
+
+User -> Client :点击进入频道
+Client -> Server :建立websocket连接
+Server --> Client :连接成功
+
+== 心跳检测 ==
+loop 10 s
+    Client -> Server: 发送心跳
+    alt 没有超时
+        Server -> Server: 更新心跳
+        Server --> Client: 确认心跳
+    else 超时
+        Server --> Client: 断开连接
+    end
+end
+
+== 加入频道 ==
+
+Client -> Server: 加入频道
+Server -> Server: 确认频道
+Server --> Client: 确认加入频道
+
+== 读取历史记录 ==
+Client -> Server: 使用api 读取历史信息
+Server -> Mongodb: 查询历史记录
+Mongodb --> Server: 历史记录
+Server --> Client: 返回历史记录
+
+==  发送消息 ==
+
+Client -> Server: 发送消息
+Server ->MQ: 消息放入队列
+MQ -> Mongodb: 存储消息
+Mongodb --> Server: 通知存储成功
+
+== 广播消息 ==
+Server -> Client:广播到所有客户端中
+
+@enduml
+#+end_src
+
+#+RESULTS:
+[[file:../img/聊天.png]]
