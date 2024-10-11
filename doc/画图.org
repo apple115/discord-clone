@@ -1,4 +1,5 @@
 
+
 ** 登录
 *** accesstoken：
 **** 使用格式
@@ -15,7 +16,7 @@
   "iat": 1516239022,   // 签发时间
   "exp": 1516242622,   // 过期时间
   "jti": "unique-token-id",  // 令牌唯一标识符
-  "scopes": ["read", "write"]  // 权限范围
+  "scopes": ["user",""]  // 权限范围
 }
 // Signature
 #+end_src
@@ -111,6 +112,41 @@ end
 [[file:../img/登录图.png]]
 
 **
+
+** 注册
+*** 注册图
+#+begin_src plantuml :file ../img/注册图.png :with 400
+@startuml
+actor User
+participant "Client" as Client
+participant "Server" as Server
+database "Redis" as Redis
+database "MySql" as MySql
+
+User -> Client: 注册
+Client -> Server: 注册请求
+Server -> Server: 验证数据
+alt 验证正确
+    Server -> Server: 密码强度检查
+    Server -> Server: 生成hash密码
+    Server -> MySql: 检查用户名/邮箱唯一性
+    MySql --> Server: 唯一性检查通过
+    Server -> MySql: 存入数据库
+    MySql --> Server: 存储成功
+    Server --> Client: 注册成功
+    Server -> Server: 发送注册成功通知(TODO 发送短信或邮件)
+else 验证错误
+    Server --> Client: 返回 格式错误
+else 密码强度不足
+    Server --> Client: 返回 密码强度不足
+else 用户名/邮箱已存在
+    Server --> Client: 返回 用户名/邮箱已存在
+end
+@enduml
+#+end_src
+
+#+RESULTS:
+[[file:../img/注册图.png]]
 
 **  用户聊天
 *** 流程图
