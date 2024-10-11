@@ -68,7 +68,9 @@ actor User
 participant "Client" as Client
 participant "Server" as Server
 database "Redis" as Redis
+participant "OAuth2.0 Provider" as OAuthProvider
 
+== 内部用户登录 ==
 User -> Client: 提供凭证
 Client -> Server: 发送登录请求
 Server -> Server: 验证凭据
@@ -79,6 +81,23 @@ alt 凭据正确
 else 凭据错误
     Server -> Client: 返回错误
 end
+
+== 外部用户使用==
+User -> Client: 选择OAuth 2.0提供者
+Client -> OAuthProvider: 重定向到授权页面
+OAuthProvider -> User: 请求授权
+User -> OAuthProvider: 授权
+OAuthProvider -> Client: 重定向回应用(附带授权码)
+Client -> Server: 发送授权码
+Server -> OAuthProvider: 请求访问令牌(使用授权码)
+OAuthProvider -> Server: 返回访问令牌和刷新令牌
+Server -> OAuthProvider: 请求用户信息(使用访问令牌)
+OAuthProvider -> Server: 返回用户信息
+Server -> Server: 创建或更新用户记录
+Server -> Server: 生成内部访问令牌和刷新令牌
+Server -> Redis: 存储刷新令牌
+Server -> Client: 返回内部访问令牌和刷新令牌
+== 请求资源 ==
 
 Client -> Server: 发送请求(包含访问令牌)
 Server -> Server: 验证访问令牌
