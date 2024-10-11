@@ -11,7 +11,42 @@ type User struct {
 	PasswordHash      string `gorm:"type:varchar(100)"`
 	Email             string `gorm:"type:varchar(100);unique_index"`
 	ProfilePictureUrl string `gorm:"type:varchar(100)"`
-	StatueMessage     string `gorm:"type:enum('在线', '注销','隐身');not null"`
+}
+
+func ExistEmail(email string) (bool, error) {
+	var user User
+	err := db.Select("id").Where("email = ?", email).First(&user).Error
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return false, err
+	}
+	return user.ID > 0, nil
+}
+
+func ExistUsername(UserName string) (bool, error) {
+	var user User
+	err := db.Select("id").Where("username = ?", UserName).First(&user).Error
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return false, err
+	}
+	return user.ID > 0, nil
+}
+
+func AddUser(data map[string]interface{}) error {
+	user := User{
+		Username:     data["username"].(string),
+		PasswordHash: data["passwordhash"].(string),
+		Email:        data["email"].(string),
+	}
+	if err := db.Create(&user).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func GetUser(id int) (User, error) {
+	var user User
+	err := db.Where("id = ?", id).First(&user).Error
+	return user, err
 }
 
 // Guild 结构体代表群组表
