@@ -20,6 +20,8 @@ func InitRouter() *gin.Engine {
 	r.POST("/register", api.Register)
 	r.POST("/login", api.GetAuth)
 	r.POST("/access-token", api.RefreshToken) // 获得新的access token
+	r.GET("/login/github", api.GitHubLogin)
+	r.GET("/callback", api.GitHubCallback)
 
 	apiv1 := r.Group("/api/v1")
 	//apiv1.Use()
