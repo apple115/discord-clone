@@ -104,6 +104,7 @@ Server -> Server: 验证访问令牌
 alt 访问令牌有效
     Server -> Client: 返回响应
 else 访问令牌无效
+    Server -> Client: 请求令牌无效
     Client -> Server: 发送刷新令牌请求
     Server -> Redis: 获取刷新令牌
     Server -> Server: 验证刷新令牌
