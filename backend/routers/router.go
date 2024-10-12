@@ -1,6 +1,7 @@
 package routers
 
 import (
+	"discord-clone/routers/api"
 	v1 "discord-clone/routers/api/v1"
 
 	"github.com/gin-gonic/gin"
@@ -16,12 +17,14 @@ func InitRouter() *gin.Engine {
 			"message": "pong",
 		})
 	})
-	r.GET("/ws", v1.WSHandler)
+	r.POST("/register", api.Register)
+	r.POST("/login", api.GetAuth)
+	r.POST("/access-token", api.RefreshToken) // 获得新的access token
 
 	apiv1 := r.Group("/api/v1")
 	//apiv1.Use()
 	{
-
+		apiv1.GET("/ws", v1.WSHandler)
 		// 获取所有频道
 		apiv1.GET("/channels", v1.GetChannels)
 		// 创建频道

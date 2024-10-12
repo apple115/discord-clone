@@ -13,6 +13,13 @@ type User struct {
 	ProfilePictureUrl string `gorm:"type:varchar(100)"`
 }
 
+type UserPublic struct {
+	ID                uint
+	Username          string
+	Email             string
+	ProfilePictureUrl string
+}
+
 func ExistEmail(email string) (bool, error) {
 	var user User
 	err := db.Select("id").Where("email = ?", email).First(&user).Error
@@ -46,6 +53,12 @@ func AddUser(data map[string]interface{}) error {
 func GetUser(id int) (User, error) {
 	var user User
 	err := db.Where("id = ?", id).First(&user).Error
+	return user, err
+}
+
+func GetUserByEmail(email string) (User, error) {
+	var user User
+	err := db.Where("email = ?", email).First(&user).Error
 	return user, err
 }
 

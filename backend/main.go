@@ -2,7 +2,9 @@ package main
 
 import (
 	"discord-clone/models"
+	"discord-clone/pkg/gredis"
 	"discord-clone/pkg/setting"
+	"discord-clone/pkg/util"
 	"discord-clone/routers"
 	"fmt"
 	"log"
@@ -14,6 +16,8 @@ import (
 func init() {
 	setting.Setup()
 	models.Setup()
+	gredis.Setup()
+	util.Setup()
 }
 
 func main() {

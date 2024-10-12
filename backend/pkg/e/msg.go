@@ -20,6 +20,11 @@ var MsgFlags = map[int]string{
 	ERROR_CHECK_EXIST_USER:  "确认用户存在失败",
 	ERROR_CHECK_EXIST_EMAIL: "确认邮箱存在失败",
 	ERROR_ADD_USER:          "添加用户失败",
+	ERROR_GET_USER:          "获取用户失败",
+
+	ERROR_GEN_TOKEN:           "生成token失败",
+	ERROR_VERIFY_RFRESH_TOKEN: "验证refresh token失败",
+	ERROR_VERIFY_ACCESS_TOKEN: "验证access token失败",
 }
 
 func GetMsg(code int) string {
