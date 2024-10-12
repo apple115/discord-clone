@@ -1,11 +1,11 @@
 package v1
 
 import (
-	"discord-clone/services"
+	"discord-clone/service"
 
 	"github.com/gin-gonic/gin"
 )
 
 func WSHandler(c *gin.Context) {
-	services.HandleWebsocket(c)
+	service.HandleWebsocket(c)
 }
