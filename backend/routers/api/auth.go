@@ -1,6 +1,7 @@
 package api
 
 import (
+	"discord-clone/models"
 	"discord-clone/pkg/app"
 	"discord-clone/pkg/e"
 	auth_services "discord-clone/service/auth_service"
@@ -17,11 +18,6 @@ type AuthForm struct {
 
 type RefreshTokenForm struct {
 	RefreshToken string `json:"refresh_token" validate:"required,min=6,max=256"`
-}
-
-type dataResponse struct {
-	AccessToken  string `json:"access_token"`
-	Refreshtoken string `json:"refresh_token"`
 }
 
 func GetAuth(c *gin.Context) {
@@ -58,7 +54,7 @@ func GetAuth(c *gin.Context) {
 		return
 	}
 	//返回token
-	appG.Response(http.StatusOK, e.SUCCESS, dataResponse{AccessToken: accesstoken, Refreshtoken: RefreshToken})
+	appG.Response(http.StatusOK, e.SUCCESS, models.AuthResponse{AccessToken: accesstoken, RefreshToken: RefreshToken})
 }
 
 // 刷新access token
@@ -85,5 +81,5 @@ func RefreshToken(c *gin.Context) {
 		appG.Response(http.StatusInternalServerError, e.ERROR_GEN_TOKEN, err)
 		return
 	}
-	appG.Response(http.StatusOK, e.SUCCESS, dataResponse{AccessToken: AccessToken, Refreshtoken: RefreshToken})
+	appG.Response(http.StatusOK, e.SUCCESS, models.AuthResponse{AccessToken: AccessToken, RefreshToken: RefreshToken})
 }

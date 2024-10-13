@@ -2,9 +2,11 @@ package api
 
 import (
 	"context"
+	"discord-clone/models"
 	"discord-clone/pkg/app"
 	"discord-clone/pkg/e"
 	"discord-clone/pkg/oauth2/github"
+	auth_services "discord-clone/service/auth_service"
 	"encoding/json"
 	"net/http"
 
@@ -44,20 +46,32 @@ func GitHubCallback(c *gin.Context) {
 		appG.Response(http.StatusInternalServerError, e.ERROR, nil)
 		return
 	}
-	// log.Println(userInfo)
-	//TODO: 创建或更新用户记录
 
-	//TODO: 生成内部访问令牌和刷新令牌
-
-	//TODO: 存储刷新令牌到 Redis
-
-	//TODO: 返回内部访问令牌和刷新令牌
 	username, _ := userInfo["login"].(string)
 	email, _ := userInfo["email"].(string)
-	data := map[string]interface{}{
-		"Username": username,
-		"email":    email,
-	}
-	appG.Response(http.StatusOK, e.SUCCESS, data)
 
+	//TODO: 如果没有这个 创建或更新用户记录
+	exits, err := models.ExistEmail(email)
+	if !exits {
+		data := map[string]interface{}{
+			"Username":     username,
+			"PasswrodHash": nil,
+			"Email":        email,
+		}
+
+		err = models.AddUser(data)
+		if err != nil {
+			appG.Response(http.StatusInternalServerError, e.ERROR_ADD_USER, nil)
+			return
+		}
+	}
+	User, err := models.GetUserByEmail(email)
+	//生成内部访问令牌和刷新令牌
+	AccessToken, RefreshToken, err := auth_services.GenerateToken(User.ID)
+	if err != nil {
+		appG.Response(http.StatusInternalServerError, e.ERROR_GEN_TOKEN, nil)
+		return
+	}
+	//返回内部访问令牌和刷新令牌
+	appG.Response(http.StatusOK, e.SUCCESS, models.AuthResponse{AccessToken: AccessToken, RefreshToken: RefreshToken})
 }
