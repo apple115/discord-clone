@@ -1,6 +1,7 @@
 package routers
 
 import (
+	"discord-clone/middleware/jwt"
 	"discord-clone/routers/api"
 	v1 "discord-clone/routers/api/v1"
 
@@ -20,11 +21,15 @@ func InitRouter() *gin.Engine {
 	r.POST("/register", api.Register)
 	r.POST("/login", api.GetAuth)
 	r.POST("/access-token", api.RefreshToken) // 获得新的access token
+
 	r.GET("/login/github", api.GitHubLogin)
 	r.GET("/callback", api.GitHubCallback)
 
+	r.GET("/captcha", api.GetClickBasicCaptData)
+	r.POST("/verifyCaptcha", api.VerifyCaptcha)
+
 	apiv1 := r.Group("/api/v1")
-	//apiv1.Use()
+	apiv1.Use(jwt.JWT())
 	{
 		apiv1.GET("/ws", v1.WSHandler)
 		// 获取所有频道
@@ -44,6 +49,9 @@ func InitRouter() *gin.Engine {
 		// 获取特定频道的所有消息
 		apiv1.GET("/channels/:channelID/messages", v1.GetChannelMessageByID)
 
+	}
+	{
+		// apiv1.POST("/user/image", api.UploadImage) //上传图片
 	}
 	return r
 }

@@ -22,9 +22,16 @@ var MsgFlags = map[int]string{
 	ERROR_ADD_USER:          "添加用户失败",
 	ERROR_GET_USER:          "获取用户失败",
 
-	ERROR_GEN_TOKEN:           "生成token失败",
-	ERROR_VERIFY_RFRESH_TOKEN: "验证refresh token失败",
-	ERROR_VERIFY_ACCESS_TOKEN: "验证access token失败",
+	ERROR_GEN_TOKEN:                "生成token失败",
+	ERROR_VERIFY_RFRESH_TOKEN:      "验证refresh token失败",
+	ERROR_VERIFY_ACCESS_TOKEN:      "验证access token失败",
+	ERROR_AUTH_CHECK_TOKEN_TIMEOUT: "验证token超时",
+
+	ERROR_CAPTCHA_KEY_EMPTY:  "验证码key为空",
+	ERROR_CAPTCHA_VERIFYDOTS: "验证码验证失败",
+	ERROR_CAPTCHA_STORE:      "非法存储格式",
+
+	FAIL_CAPTCHA: "验证码错误",
 }
 
 func GetMsg(code int) string {
