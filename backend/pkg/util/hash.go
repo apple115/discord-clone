@@ -33,12 +33,10 @@ func CompareSPassword(hasher PasswordHasher, hashedPassword, password string) bo
 	return hasher.ComparePassword(hashedPassword, password)
 }
 
-var Bcrypt = &BcryptHasher{}
-
 func HashPassword(password string) (string, error) {
-	return HashSPassword(Bcrypt, password)
+		return HashSPassword(&BcryptHasher{}, password)
 }
 
 func ComparePassword(hashedPassword, password string) bool {
-	return CompareSPassword(Bcrypt, hashedPassword, password)
+	return CompareSPassword(&BcryptHasher{}, hashedPassword, password)
 }

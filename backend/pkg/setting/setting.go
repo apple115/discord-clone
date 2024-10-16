@@ -7,6 +7,28 @@ import (
 	"github.com/go-ini/ini"
 )
 
+type App struct {
+	PageSize  int
+	PrefixUrl string
+
+	RuntimeRootPath string
+
+	ImageSavePath  string
+	ImageMaxSize   int
+	ImageAllowExts []string
+
+	ExportSavePath string
+	QrCodeSavePath string
+	FontSavePath   string
+
+	LogSavePath string
+	LogSaveName string
+	LogFileExt  string
+	TimeFormat  string
+}
+
+var AppSetting = &App{}
+
 type Server struct {
 	RunMode      string
 	HttpPort     int
@@ -51,12 +73,16 @@ func Setup() {
 	if err != nil {
 		log.Fatalf("setting.Setup,fail to parse 'conf/app.ini':%v", err)
 	}
+	mapTo("app", AppSetting)
 	mapTo("database", DatabaseSetting)
 	mapTo("mongodb", MongoDBSetting)
 	mapTo("server", ServerSetting)
 	mapTo("redis", RedisSetting)
+
+	AppSetting.ImageMaxSize = AppSetting.ImageMaxSize * 1024 * 1024
 	ServerSetting.ReadTimeout = ServerSetting.ReadTimeout * time.Second
 	ServerSetting.WriteTimeout = ServerSetting.WriteTimeout * time.Second
+	RedisSetting.IdleTimeout = RedisSetting.IdleTimeout * time.Second
 }
 
 func mapTo(section string, v interface{}) {

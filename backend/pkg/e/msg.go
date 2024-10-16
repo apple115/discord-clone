@@ -21,6 +21,7 @@ var MsgFlags = map[int]string{
 	ERROR_CHECK_EXIST_EMAIL: "确认邮箱存在失败",
 	ERROR_ADD_USER:          "添加用户失败",
 	ERROR_GET_USER:          "获取用户失败",
+	ERROR_NOT_EXIST_USER: "用户不存在",
 
 	ERROR_GEN_TOKEN:                "生成token失败",
 	ERROR_VERIFY_RFRESH_TOKEN:      "验证refresh token失败",
@@ -30,6 +31,10 @@ var MsgFlags = map[int]string{
 	ERROR_CAPTCHA_KEY_EMPTY:  "验证码key为空",
 	ERROR_CAPTCHA_VERIFYDOTS: "验证码验证失败",
 	ERROR_CAPTCHA_STORE:      "非法存储格式",
+
+	ERROR_UPLOAD_CHECK_IMAGE_FAIL:   "上传图片验证错误",
+	ERROR_UPLOAD_CHECK_IMAGE_FORMAT: "上传图片格式错误",
+	ERROR_UPLOAD_SAVE_IMAGE_FAIL:    "上传图片保存错误",
 
 	FAIL_CAPTCHA: "验证码错误",
 }

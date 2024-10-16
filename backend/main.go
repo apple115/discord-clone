@@ -2,6 +2,7 @@ package main
 
 import (
 	"discord-clone/models"
+	"discord-clone/pkg/captdata"
 	"discord-clone/pkg/gredis"
 	"discord-clone/pkg/setting"
 	"discord-clone/pkg/util"
@@ -18,6 +19,7 @@ func init() {
 	models.Setup()
 	gredis.Setup()
 	util.Setup()
+	captdata.Setup()
 }
 
 func main() {

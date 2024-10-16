@@ -29,6 +29,15 @@ func ExistEmail(email string) (bool, error) {
 	return user.ID > 0, nil
 }
 
+func ExistUserId(id uint) (bool, error) {
+	var user User
+	err := db.Select("id").Where("id = ?", id).First(&user).Error
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return false, err
+	}
+	return user.ID > 0, nil
+}
+
 func ExistUsername(UserName string) (bool, error) {
 	var user User
 	err := db.Select("id").Where("username = ?", UserName).First(&user).Error
@@ -45,6 +54,29 @@ func AddUser(data map[string]interface{}) error {
 		Email:        data["email"].(string),
 	}
 	if err := db.Create(&user).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func EditUser(id int, data map[string]interface{}) error {
+	user := User{
+		Username:          data["username"].(string),
+		PasswordHash:      data["passwordhash"].(string),
+		Email:             data["email"].(string),
+		ProfilePictureUrl: data["ProfilePictureUrl"].(string),
+	}
+	if err := db.Model(&User{}).Where("id = ?", id).Updates(user).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func AddUserPicture(id uint,data map[string]interface{}) error {
+	user := User{
+		ProfilePictureUrl: data["ProfilePictureUrl"].(string),
+	}
+	if err := db.Model(&User{}).Where("id = ?", id).Updates(user).Error; err != nil {
 		return err
 	}
 	return nil

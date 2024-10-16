@@ -54,7 +54,7 @@ func GetAuth(c *gin.Context) {
 		return
 	}
 	//返回token
-	appG.Response(http.StatusOK, e.SUCCESS, models.AuthResponse{AccessToken: accesstoken, RefreshToken: RefreshToken})
+	appG.Response(http.StatusOK, e.SUCCESS, models.AuthResponse{UserId: UserPublic.ID, AccessToken: accesstoken, RefreshToken: RefreshToken})
 }
 
 // 刷新access token
@@ -81,5 +81,5 @@ func RefreshToken(c *gin.Context) {
 		appG.Response(http.StatusInternalServerError, e.ERROR_GEN_TOKEN, err)
 		return
 	}
-	appG.Response(http.StatusOK, e.SUCCESS, models.AuthResponse{AccessToken: AccessToken, RefreshToken: RefreshToken})
+	appG.Response(http.StatusOK, e.SUCCESS, models.AuthResponse{UserId: userID, AccessToken: AccessToken, RefreshToken: RefreshToken})
 }

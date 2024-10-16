@@ -16,7 +16,7 @@ func (a *Auth) Check() (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	check := util.ComparePassword(a.Password, user.PasswordHash)
+	check := util.ComparePassword(user.PasswordHash, a.Password)
 	return check, nil
 }
 
