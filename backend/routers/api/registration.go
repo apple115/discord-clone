@@ -19,9 +19,8 @@ type RegisterForm struct {
 // 注册请求
 func Register(c *gin.Context) {
 	var (
-		appG   = app.Gin{C: c}
-		form   RegisterForm
-		hasher util.PasswordHasher
+		appG = app.Gin{C: c}
+		form RegisterForm
 	)
 	httpCode, errCode := app.BindAndValidate(c, &form)
 	if errCode != e.SUCCESS {
@@ -53,8 +52,7 @@ func Register(c *gin.Context) {
 	}
 
 	//生成哈希密码,存储用户
-	hasher = &util.BcryptHasher{}
-	passwrordhash, err := hasher.HashPassword(form.Password)
+	passwrordhash, err := util.HashPassword(form.Password)
 	if err != nil {
 		appG.Response(http.StatusInternalServerError, e.ERROR_HASHPASSWORD, nil)
 		return

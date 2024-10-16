@@ -12,12 +12,11 @@ type Auth struct {
 
 // Check ...
 func (a *Auth) Check() (bool, error) {
-		user, err := models.GetUserByEmail(a.Email)
+	user, err := models.GetUserByEmail(a.Email)
 	if err != nil {
 		return false, err
 	}
-	hasher := util.BcryptHasher{}
-	check := hasher.ComparePassword(a.Password, user.PasswordHash)
+	check := util.ComparePassword(a.Password, user.PasswordHash)
 	return check, nil
 }
 

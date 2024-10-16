@@ -6,7 +6,7 @@ import (
 
 type PasswordHasher interface {
 	HashPassword(password string) (string, error)
-	ComparePassword(password string, hash string) bool
+	ComparePassword(hash, password string) bool
 }
 
 // BcryptHasher Bcrypt 哈希实现
@@ -19,7 +19,26 @@ func (h *BcryptHasher) HashPassword(password string) (string, error) {
 }
 
 // ComparePassword 验证密码哈希
-func (h *BcryptHasher) ComparePassword(password, hashedPassword string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
+func (h *BcryptHasher) ComparePassword(hashedPassword, passwrod string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(passwrod))
 	return err == nil
+}
+
+var _ PasswordHasher = (*BcryptHasher)(nil)
+
+func HashSPassword(hasher PasswordHasher, password string) (string, error) {
+	return hasher.HashPassword(password)
+}
+func CompareSPassword(hasher PasswordHasher, hashedPassword, password string) bool {
+	return hasher.ComparePassword(hashedPassword, password)
+}
+
+var Bcrypt = &BcryptHasher{}
+
+func HashPassword(password string) (string, error) {
+	return HashSPassword(Bcrypt, password)
+}
+
+func ComparePassword(hashedPassword, password string) bool {
+	return CompareSPassword(Bcrypt, hashedPassword, password)
 }
