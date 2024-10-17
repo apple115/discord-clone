@@ -4,6 +4,7 @@ import (
 	"discord-clone/models"
 	"discord-clone/pkg/captdata"
 	"discord-clone/pkg/gredis"
+	"discord-clone/pkg/logging"
 	"discord-clone/pkg/setting"
 	"discord-clone/pkg/util"
 	"discord-clone/routers"
@@ -20,6 +21,7 @@ func init() {
 	gredis.Setup()
 	util.Setup()
 	captdata.Setup()
+	logging.Setup()
 }
 
 func main() {
