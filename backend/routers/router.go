@@ -31,10 +31,10 @@ func InitRouter() *gin.Engine {
 	r.POST("/verifyCaptcha", api.VerifyCaptcha)
 
 	r.StaticFS("/upload/images", http.Dir(upload.GetImageFullPath()))
-	r.GET("/ws", v1.WSHandler)
 	apiv1 := r.Group("/api/v1")
 	apiv1.Use(jwt.JWT())
 	{
+		apiv1.GET("/ws", v1.WSHandler)
 		// 获取所有频道
 		apiv1.GET("/channels", v1.GetChannels)
 		// 创建频道

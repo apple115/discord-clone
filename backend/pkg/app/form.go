@@ -2,6 +2,7 @@ package app
 
 import (
 	"discord-clone/pkg/e"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -11,6 +12,7 @@ import (
 func BindAndValidate(c *gin.Context, form interface{}) (int, int) {
 	// 绑定请求数据到结构体
 	if err := c.ShouldBind(form); err != nil {
+		log.Println(err)
 		return http.StatusBadRequest, e.INVALID_PARAMS
 	}
 
@@ -19,6 +21,7 @@ func BindAndValidate(c *gin.Context, form interface{}) (int, int) {
 
 	// 验证结构体
 	if err := validate.Struct(form); err != nil {
+		log.Println(err)
 		return http.StatusBadRequest, e.INVALID_PARAMS
 	}
 

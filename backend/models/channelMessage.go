@@ -16,6 +16,7 @@ type ChannelMessage struct {
 	UserID    string             `bson:"user_id" json:"user_id"`
 	CreatedAt time.Time          `bson:"created_at" json:"created_at"`
 	UpdatedAt time.Time          `bson:"updated_at" json:"updated_at"`
+	Timestamp string             `bson:"timestamp" json:"timestamp"`
 }
 
 // 得到全部的消息，每次选择最后的50条，然后根据时间排序，最新的在最前面

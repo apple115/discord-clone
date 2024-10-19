@@ -6,8 +6,7 @@ import (
 	"discord-clone/pkg/app"
 	"discord-clone/pkg/e"
 	"discord-clone/pkg/upload"
-	"discord-clone/service"
-	"encoding/json"
+	"discord-clone/service/ws_service"
 	"log"
 	"net/http"
 	"time"
@@ -258,8 +257,7 @@ func CreateChannelImage(c *gin.Context) {
 		},
 	}
 
-	messageByte, err := json.Marshal(message)
-	service.BroadcastMessageToChannel(channelID, messageByte)
+	ws_service.GuildInstance.SendJSON(message)
 
 	collection := models.MongoDB.Collection("messages")
 	_, err = collection.InsertOne(context.TODO(), message)
