@@ -1,0 +1,11 @@
+
+
+channel 的设计
+一个用户使用websocket 连接guild
+每一条新的信息，用户都将收到
+当用户没有使用channelID,返回没有channelID
+
+client 与频道无关
+所以设计的化 完全不用在户有没有channel 这一层
+总体的设计是 guild + client
+

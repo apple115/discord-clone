@@ -221,3 +221,31 @@ Server -> Client:广播到所有客户端中
 
 #+RESULTS:
 [[file:../img/聊天.png]]
+
+
+** 用户聊天发送图片
+*** 设计图
+#+begin_src plantuml :file ../img/发送图片.png :with 400
+@startuml
+actor User
+participant "Client" as Client
+participant "Server" as Server
+database "Mongodb" as Mongodb
+
+User -> Client: 点击向channal发送图片
+Client -> Server: 使用POST api 发送图片
+Server -> Server: 检测channal 是否存在
+alt 存在
+    Server -> Server: 存储图片，生成url
+    Server --> Client: 返回发送成功
+    Server -> Mongodb: 存储消息
+    Mongodb --> Server: 存储成功
+    Server --> Client: 广播到连接channal的所有客户端
+else 不存在
+    Server --> Client: 不存在这个channel
+end
+@enduml
+#+end_src
+
+#+RESULTS:
+[[file:../img/发送图片.png]]
