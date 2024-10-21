@@ -8,8 +8,7 @@ import (
 
 // ConnectMessage 结构体用于处理连接消息
 type ConnectMessage struct {
-	Token  string `json:"token"`
-	UserID string `json:"user_id"`
+	UserID uint `json:"user_id"`
 }
 
 // // JoinChannelMessage 结构体用于处理加入频道消息
@@ -25,6 +24,7 @@ type SendMessage struct {
 
 // 连接服务器
 func handleConnect(client *Client, data json.RawMessage) {
+	log.Println("已经连接服务器")
 	var connectMsg ConnectMessage
 	err := json.Unmarshal(data, &connectMsg)
 	if err != nil {
@@ -32,20 +32,8 @@ func handleConnect(client *Client, data json.RawMessage) {
 		client.sendError("error")
 		return
 	}
-	accesstoken := connectMsg.Token
 	userID := connectMsg.UserID
-	ok, err := isValidToken(accesstoken)
-	if err != nil {
-		client.sendError("error")
-		client.Conn.Close()
-		return
-	}
-	if !ok {
-		client.sendError("Unauthorized")
-		client.Conn.Close()
-		return
-	}
-	// ok, err = isExistUser(userID)
+	ok, err := isExistUser(userID)
 	if ok {
 		client.UserID = userID
 		client.sendJSON(responceData["connect_success"])
@@ -101,6 +89,7 @@ func handleSendMessage(client *Client, data json.RawMessage) {
 		"message":   sendMsg.Content,
 		// "timestamp": timestamp,
 	}
+	log.Println("SendMessage2")
 	//全服务器广播消息
 	GuildInstance.SendJSON(Message)
 }

@@ -9,6 +9,6 @@ func isExistChannel(channelID string) (bool, error) {
 	return true, nil
 }
 
-func isExistUser(userID string) (bool, error) {
+func isExistUser(userID uint) (bool, error) {
 	return true, nil
 }

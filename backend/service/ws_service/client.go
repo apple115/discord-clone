@@ -4,12 +4,13 @@ import (
 	"encoding/json"
 	"log"
 	"time"
+
 	"github.com/gorilla/websocket"
 )
 
 type Client struct {
 	Conn          *websocket.Conn
-	UserID        string
+	UserID        uint
 	Send          chan []byte // 发送消息的通道
 	lastHeartbeat time.Time   // 最后心跳时间
 }
@@ -26,6 +27,11 @@ func (client *Client) sendError(message string) {
 	})
 }
 
+type Message struct {
+	Type string          `json:"type"`
+	Data json.RawMessage `json:"data"`
+}
+
 func (client *Client) readPump() {
 	defer func() {
 		client.Conn.Close()
@@ -37,19 +43,20 @@ func (client *Client) readPump() {
 			break
 		}
 		// 解析接收到的消息
-		var msg map[string]json.RawMessage
+		var msg Message
 		err = json.Unmarshal(message, &msg)
 		if err != nil {
 			log.Printf("消息解析失败: %v", err)
 			continue
 		}
 		// 根据消息类型处理不同的事件
-		messageType := string(msg["type"])
-		data := msg["data"]
+		messageType := msg.Type
+		data := msg.Data
 		if handler, ok := messageTypes[messageType]; ok {
+			log.Println("处理消息:", messageType)
 			handler(client, data)
 		} else {
-			client.sendError("Unknown event type")
+			client.sendError("no event handler:" + messageType)
 		}
 		// 检查心跳时间，如果超过一定时间没有心跳，关闭连接
 		if time.Since(client.lastHeartbeat) > 100*time.Second {
@@ -66,8 +73,10 @@ func (client *Client) writePump() {
 	}()
 	for {
 		message, ok := <-client.Send
+		log.Println("writePump")
 		if !ok {
 			client.Conn.WriteMessage(websocket.CloseMessage, []byte{})
+			log.Println("发送消息失败，关闭连接")
 			return
 		}
 		// 检查连接是否仍然打开

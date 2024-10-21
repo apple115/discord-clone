@@ -4,20 +4,21 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 )
 
 var (
-	GuildInstance = Guild{} // 保存所有连接的客户端，string 为用户 ID
+	GuildInstance = Guild{Users: make(map[uint]*Client)} // 保存所有连接的客户端，string 为用户 ID
 	upgrader      = websocket.Upgrader{
 		CheckOrigin: func(r *http.Request) bool {
 			return true
 		},
 	}
 	messageTypes = map[string]func(client *Client, data json.RawMessage){
-		"connect":      handleConnect,
+		"connect": handleConnect,
 		// "join_channel": handleJoinChannel,
 		"send_message": handleSendMessage,
 		"heartbeat":    handleHeartbeat,
@@ -36,8 +37,8 @@ func HandleWebsocket(c *gin.Context) {
 	}
 	defer conn.Close()
 	// 这里就绑定了用户 ID
-	client := &Client{Conn: conn, Send: make(chan []byte), UserID: UserId.(string)}
-
+	client := &Client{Conn: conn, Send: make(chan []byte), UserID: UserId.(uint), lastHeartbeat: time.Now()}
+	GuildInstance.addClient(client)
 	go client.writePump() // 发送消息
 	client.readPump()     // 读取消息
 }
